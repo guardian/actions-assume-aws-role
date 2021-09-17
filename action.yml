@@ -1,26 +1,13 @@
-name: 'Riff-Raff Upload'
-description: 'Upload artifacts to Riff-Raff'
+name: 'AWS Credentials Provisioning'
+description: 'Install AWS credentials that can be used by subsequent steps'
 author: 'The Guardian'
 inputs:
-  artifactDirectory:
-    description: 'The directory containing the files to upload to Riff-Raff'
-    required: true
   awsRoleToAssume:
-    # TODO improve this!
-    description: 'The ARN of the AWS role with access to Riff-Raff buckets. Just enter this - ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}'
+    description: 'The ARN of the AWS role which can be assumed by GHA'
     required: true
   awsRegion:
     description: 'The AWS region'
     default: 'eu-west-1'
-    required: false
-  artifactBucket:
-    description: 'The S3 bucket, owned by Riff-Raff, holding artifacts to deploy. Just enter this - ${{ secrets.GU_RIFF_RAFF_ARTIFACT_BUCKET }}'
-    required: true
-  buildBucket:
-    description: 'The S3 bucket, owned by Riff-Raff, holding build.json files. Just enter this - ${{ secrets.GU_RIFF_RAFF_BUILD_BUCKET }}'
-    required: true
-  projectName:
-    description: 'The name of the project as appears in Riff-Raff. Defaults to repository name.'
     required: false
 runs:
   using: 'node12'
