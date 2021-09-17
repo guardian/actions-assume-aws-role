@@ -19,6 +19,9 @@ inputs:
   buildBucket:
     description: 'The S3 bucket, owned by Riff-Raff, holding build.json files. Just enter this - ${{ secrets.GU_RIFF_RAFF_BUILD_BUCKET }}'
     required: true
+  projectName:
+    description: 'The name of the project as appears in Riff-Raff. Defaults to repository name.'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'

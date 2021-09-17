@@ -118,9 +118,11 @@ function getFiles(dir) {
     });
 }
 function getBuildJson() {
-    const repoName = getEnvString("GITHUB_REPOSITORY");
+    const [, repoName] = getEnvString("GITHUB_REPOSITORY").split("/");
+    const maybeProjectName = core.getInput("projectName");
+    const projectName = maybeProjectName !== "" ? maybeProjectName : repoName;
     return {
-        projectName: repoName,
+        projectName,
         buildNumber: getEnvString("GITHUB_RUN_NUMBER"),
         branch: getEnvString("GITHUB_REF"),
         revision: getEnvString("GITHUB_SHA"),
@@ -140,7 +142,7 @@ function run() {
                 buildBucket: core.getInput("buildBucket"),
             };
             core.debug("*** START config ***");
-            core.info(JSON.stringify(config));
+            core.debug(JSON.stringify(config));
             core.debug("*** END config ***");
             const buildJson = getBuildJson();
             core.debug("*** START build.json ***");

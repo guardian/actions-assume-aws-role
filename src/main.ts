@@ -81,9 +81,12 @@ async function getFiles(dir: string): Promise<string[]> {
 }
 
 function getBuildJson(): BuildJson {
-  const repoName = getEnvString("GITHUB_REPOSITORY");
+  const [, repoName] = getEnvString("GITHUB_REPOSITORY").split("/");
+  const maybeProjectName = core.getInput("projectName");
+  const projectName = maybeProjectName !== "" ? maybeProjectName : repoName;
+
   return {
-    projectName: repoName, // TODO add team prefix and strip GH org prefix
+    projectName,
     buildNumber: getEnvString("GITHUB_RUN_NUMBER"),
     branch: getEnvString("GITHUB_REF"),
     revision: getEnvString("GITHUB_SHA"),
@@ -104,7 +107,7 @@ async function run(): Promise<void> {
     };
 
     core.debug("*** START config ***");
-    core.info(JSON.stringify(config));
+    core.debug(JSON.stringify(config));
     core.debug("*** END config ***");
 
     const buildJson = getBuildJson();
