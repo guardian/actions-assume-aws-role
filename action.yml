@@ -1,11 +1,24 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Riff-Raff Upload'
+description: 'Upload artifacts to Riff-Raff'
+author: 'The Guardian'
 inputs:
-  milliseconds: # change this
+  artifactDirectory:
+    description: 'The directory containing the files to upload to Riff-Raff'
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+  awsRoleToAssume:
+    # TODO improve this!
+    description: 'The ARN of the AWS role with access to Riff-Raff buckets. Just enter this - ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}'
+    required: true
+  awsRegion:
+    description: 'The AWS region'
+    default: 'eu-west-1'
+    required: false
+  artifactBucket:
+    description: 'The S3 bucket, owned by Riff-Raff, holding artifacts to deploy. Just enter this - ${{ secrets.GU_RIFF_RAFF_ARTIFACT_BUCKET }}'
+    required: true
+  buildBucket:
+    description: 'The S3 bucket, owned by Riff-Raff, holding build.json files. Just enter this - ${{ secrets.GU_RIFF_RAFF_BUILD_BUCKET }}'
+    required: true
 runs:
   using: 'node12'
   main: 'dist/index.js'
