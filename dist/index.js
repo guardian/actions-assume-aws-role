@@ -56,7 +56,7 @@ function fetchWebIdentityToken(config) {
             headers,
         });
         const responseJson = (yield response.json());
-        return JSON.stringify(responseJson.value);
+        return responseJson.value;
     });
 }
 function run() {

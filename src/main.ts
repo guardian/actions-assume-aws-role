@@ -25,7 +25,7 @@ async function fetchWebIdentityToken(config: Config): Promise<string> {
     headers,
   });
   const responseJson = (await response.json()) as Record<string, unknown>;
-  return JSON.stringify(responseJson.value);
+  return responseJson.value as string;
 }
 
 async function run(): Promise<void> {
@@ -44,6 +44,7 @@ async function run(): Promise<void> {
 
     // fetching the token
     const token = await fetchWebIdentityToken(config);
+
     // save the token to disk
     const tempDir = await fs.mkdtemp("aws-creds");
     const tokenFile = path.join(tempDir, "aws.creds.json");
