@@ -84,8 +84,8 @@ function run() {
                 AWS_DEFAULT_REGION: config.awsRegion,
             };
             const envString = Object.entries(env)
-                .map(([key, value]) => `${key}="${value}"\n`)
-                .join();
+                .map(([key, value]) => `${key}=${value}\n`)
+                .join("");
             core.debug("*** START environment ***");
             core.debug(envString);
             core.debug("*** END environment ***");
