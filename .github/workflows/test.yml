@@ -1,24 +1,17 @@
 name: 'build-test'
 on: # rebuild any PRs and main branch changes
   pull_request:
-  push:
-    branches:
-      - main
-      - 'releases/*'
-
+  workflow_dispatch:
 jobs:
-  build: # make sure build/ci work properly
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - run: |
-          npm install
-      - run: |
-          npm run all
   test: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v2
-      - uses: ./
+      - run: printenv
+      - uses: guardian/actions-assume-aws-role@hackday
         with:
-          milliseconds: 1000
+          awsRoleToAssume: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
+      - run: aws s3 cp README.md s3://riffraff-artifact/akash/README.md
