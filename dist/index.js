@@ -82,6 +82,7 @@ function run() {
                 AWS_WEB_IDENTITY_TOKEN_FILE: tokenFile,
                 AWS_ROLE_ARN: config.awsRoleArn,
                 AWS_DEFAULT_REGION: config.awsRegion,
+                AWS_REGION: config.awsRegion,
             };
             const envString = Object.entries(env)
                 .map(([key, value]) => `${key}=${value}\n`)
