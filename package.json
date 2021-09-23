@@ -1,8 +1,8 @@
 {
-  "name": "typescript-action",
+  "name": "@guardian/actions-assume-aws-role",
   "version": "0.0.0",
   "private": true,
-  "description": "TypeScript template action",
+  "description": "Install AWS credentials that can be used by subsequent steps",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
@@ -15,15 +15,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/guardian/actions-assume-aws-role.git"
   },
-  "keywords": [
-    "actions",
-    "node",
-    "setup"
-  ],
-  "author": "",
-  "license": "MIT",
+  "author": "Developer Experience <devx@theguardian.com>",
   "dependencies": {
     "@actions/core": "^1.4.0"
   },
