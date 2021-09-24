@@ -16,9 +16,15 @@ jobs:
       - run: |
           npm run all
   test: # make sure the action works on a clean machine without building
+    permissions:
+      id-token: write
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          milliseconds: 1000
+          awsRoleToAssume: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
+      - run: aws s3 cp README.md s3://$BUCKET/actions-assume-aws-role/ci/README.md
+        env:
+          BUCKET: ${{ secrets.BUCKET_FOR_CI }}
