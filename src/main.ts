@@ -38,10 +38,6 @@ async function run(): Promise<void> {
       gitHubEnvFile: getEnvString("GITHUB_ENV"),
     };
 
-    core.debug("*** START config ***");
-    core.debug(JSON.stringify(config));
-    core.debug("*** END config ***");
-
     // fetching the token
     const token = await fetchWebIdentityToken(config);
 
@@ -59,10 +55,6 @@ async function run(): Promise<void> {
     const envString = Object.entries(env)
       .map(([key, value]) => `${key}=${value}\n`)
       .join("");
-
-    core.debug("*** START environment ***");
-    core.debug(envString);
-    core.debug("*** END environment ***");
 
     await fs.appendFile(config.gitHubEnvFile, envString);
   } catch (error) {

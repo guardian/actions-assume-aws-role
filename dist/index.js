@@ -69,9 +69,6 @@ function run() {
                 awsRegion: core.getInput("awsRegion"),
                 gitHubEnvFile: getEnvString("GITHUB_ENV"),
             };
-            core.debug("*** START config ***");
-            core.debug(JSON.stringify(config));
-            core.debug("*** END config ***");
             // fetching the token
             const token = yield fetchWebIdentityToken(config);
             // save the token to disk
@@ -87,9 +84,6 @@ function run() {
             const envString = Object.entries(env)
                 .map(([key, value]) => `${key}=${value}\n`)
                 .join("");
-            core.debug("*** START environment ***");
-            core.debug(envString);
-            core.debug("*** END environment ***");
             yield fs_1.promises.appendFile(config.gitHubEnvFile, envString);
         }
         catch (error) {
