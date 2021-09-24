@@ -12,7 +12,17 @@ async function run(): Promise<void> {
 
     core.setOutput('time', new Date().toTimeString())
   } catch (error) {
-    core.setFailed(error.message)
+    const errorMessage = (err: unknown) => {
+      if (typeof err === 'string') {
+        return err
+      }
+      if (err instanceof Error) {
+        return err.message
+      }
+      return 'Internal Error'
+    }
+
+    core.setFailed(errorMessage(error))
   }
 }
 
