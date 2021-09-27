@@ -1,105 +1,146 @@
-<p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
-</p>
+# @guardian/actions-assume-aws-role
 
-# Create a JavaScript Action using TypeScript
+This is a [GitHub Action][action] for use during [CI].
+Use it to gain temporary credentials to AWS [by exchanging GitHub OIDC credentials for AWS IAM Assume Role][aws-docs] using an `AWS::IAM::OIDCProvider`.
 
-Use this template to bootstrap the creation of a TypeScript action.:rocket:
+## Set up
+[This blog][awsteele] provides a lot of detail.
 
-This template includes compilation support, tests, a validation workflow, publishing, and versioning guidance.  
+In short, you first need to create three resources:
+  1. AWS::IAM::Policy
+  2. AWS::IAM::Role
+  3. AWS::IAM::OIDCProvider
 
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
+We recommend doing this via CloudFormation.
 
-## Create an action from this template
+If you're using [@guardian/cdk] you can use the `GuGithubActionsRole` construct:
 
-Click the `Use this Template` and provide the new repo details for your action
-
-## Code in Main
-
-> First, you'll need to have a reasonably modern version of `node` handy. This won't work with versions older than 9, for instance.
-
-Install the dependencies  
-```bash
-$ npm install
+```typescript
+new GuGithubActionsRole(stack, {
+  policies: [
+    // Just an example, customise as needed.
+    new GuAllowPolicy(stack, "GitHubBucketAccessPolicy", {
+      actions: ["s3:Put*"],
+      resources: ["arn:aws:s3:::/build-artifacts/*"],
+    }),
+  ],
+});
 ```
 
-Build the typescript and package it for distribution
-```bash
-$ npm run build && npm run package
-```
-
-Run the tests :heavy_check_mark:  
-```bash
-$ npm test
-
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
-
-...
-```
-
-## Change action.yml
-
-The action.yml contains defines the inputs and output for your action.
-
-Update the action.yml with your name, description, inputs and outputs for your action.
-
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
-
-## Change the Code
-
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
-
-```javascript
-import * as core from '@actions/core';
-...
-
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run()
-```
-
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
-
-## Publish to a distribution branch
-
-Actions are run from GitHub repos so we will checkin the packed dist folder. 
-
-Then run [ncc](https://github.com/zeit/ncc) and push the results:
-```bash
-$ npm run package
-$ git add dist
-$ git commit -a -m "prod dependencies"
-$ git push origin releases/v1
-```
-
-Note: We recommend using the `--license` option for ncc, which will create a license file for all of the production node modules used in your project.
-
-Your action is now published! :rocket: 
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Validate
-
-You can now validate the action by referencing `./` in a workflow in your repo (see [test.yml](.github/workflows/test.yml))
+If you're using writing CloudFormation in YAML, the resources you need will look something like this:
 
 ```yaml
-uses: ./
-with:
-  milliseconds: 1000
+Resources:
+  # Resources to provide S3 upload permissions to GitHub Actions.
+  # Permissions are scoped to Riff-Raff buckets.
+  # See https://github.com/guardian/actions-assume-aws-role
+  GitHubBucketAccessPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: GitHubBucketAccessPolicy
+      PolicyDocument:
+        Statement:
+          Effect: Allow
+          Action:
+            - s3:Put* # Just an example, customise as needed.
+          Resource:
+            - !Sub arn:aws:s3:::build-artifacts/* # Just an example, customise as needed.
+      Roles:
+        - Ref: GitHubRole
+
+  GitHubRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !Ref GitHubOidc
+            Condition:
+              StringLike:
+                # All GitHub Actions running in repositories within the Guardian GitHub organisation, customise as needed.
+                vstoken.actions.githubusercontent.com:sub: repo:guardian/*
+
+  GitHubOidc:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: https://vstoken.actions.githubusercontent.com
+      ClientIdList: [sigstore]
+
+      # This is the thumbprint of `vstoken.actions.githubusercontent.com`
+      # See: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html
+      ThumbprintList: [a031c46782e6e6c662c2c87c76da9aa62ccabd8e]
+
+Outputs:
+  GitHubRoleArn:
+    # To be set as a secret in GitHub Actions
+    Value: !GetAtt GitHubRole.Arn
 ```
 
-See the [actions tab](https://github.com/actions/typescript-action/actions) for runs of this action! :rocket:
+## Usage
+1. Add the `AWS::IAM::Role` ARN as a GitHub Actions [secret] (we'll assume the secret has been called `GU_ACTIONS_ROLE`)
+2. Ensure your AWS credential provider chain includes `TokenFileWebIdentityCredentials` (or equivalent in other flavours of the AWS SDK)
+3. Add `id-token` permissions to the GitHub Actions job:
+    ```yaml
+    name: CI
+    on:
+      pull_request:
+      workflow_dispatch:
+    jobs:
+      CI:
+        runs-on: ubuntu-latest
+        permissions:
+          id-token: write
+          contents: read
+    ```
+4. Update your GitHub Actions workflow, adding the following step _before_ any request to AWS:
+    ```yaml
+    - uses: guardian/actions-assume-aws-role@v1
+      with:
+        awsRoleToAssume: ${{ secrets.GU_ACTIONS_ROLE }}
+    ```
 
-## Usage:
+A full example would look something like this:
 
-After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and latest V1 action
+```yaml
+name: CI
+on:
+  pull_request:
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v2
+      - uses: guardian/actions-assume-aws-role@v1
+        with:
+          awsRoleToAssume: ${{ secrets.GU_ACTIONS_ROLE }}
+      - run: aws s3 cp artifact.zip s3://build-artifacts/actions-assume-aws-role/ci/artifact.zip # Just an example, customise as needed.
+```
+
+### Usage with `sbt-riffraff-artifact` and `node-riffraff-artifact`
+[`sbt-riffraff-artifact`][riffraff-sbt] and [`node-riffraff-artifact`][riffraff-node] have been updated to work with `guardian/actions-assume-aws-role`.
+See the documentation in those repositories for more information.
+
+## Contributing
+It should be as simple as:
+  1. Clone the repository (`git clone git@github.com:guardian/actions-assume-aws-role.git`)
+  2. Install dependencies (`npm install`)
+  3. Make code changes
+  4. Run tests and package for distribution (`npm run all`)
+  5. Raise a PR
+  6. [Version] the Action once your change has been merged to `main`
+
+
+[@guardian/cdk]: https://github.com/guardian/cdk
+[action]: https://github.com/features/actions
+[aws-docs]: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc.html
+[awsteele]: https://awsteele.com/blog/2021/09/15/aws-federation-comes-to-github-actions.html
+[CI]: https://docs.github.com/en/actions/automating-builds-and-tests/about-continuous-integration
+[riffraff-node]: https://github.com/guardian/node-riffraff-artifact
+[riffraff-sbt]: https://github.com/guardian/sbt-riffraff-artifact
+[secret]: https://docs.github.com/en/actions/security-guides/encrypted-secrets
+[Version]: https://github.com/actions/toolkit/blob/master/docs/action-versioning.md
