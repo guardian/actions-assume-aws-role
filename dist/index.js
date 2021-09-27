@@ -39,6 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const fs_1 = __nccwpck_require__(747);
+const os = __importStar(__nccwpck_require__(87));
 const path_1 = __importDefault(__nccwpck_require__(622));
 const core = __importStar(__nccwpck_require__(186));
 const node_fetch_1 = __importStar(__nccwpck_require__(467));
@@ -72,7 +73,7 @@ function run() {
             // fetching the token
             const token = yield fetchWebIdentityToken(config);
             // save the token to disk
-            const tempDir = yield fs_1.promises.mkdtemp("aws-creds");
+            const tempDir = yield fs_1.promises.mkdtemp(path_1.default.join(os.tmpdir(), "aws-creds"));
             const tokenFile = path_1.default.join(tempDir, "aws.creds.json");
             yield fs_1.promises.writeFile(tokenFile, token, { encoding: "utf-8" });
             const env = {

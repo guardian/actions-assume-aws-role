@@ -1,4 +1,5 @@
 import { promises as fs } from "fs";
+import * as os from "os";
 import path from "path";
 import * as core from "@actions/core";
 import fetch, { Headers } from "node-fetch";
@@ -42,7 +43,7 @@ async function run(): Promise<void> {
     const token = await fetchWebIdentityToken(config);
 
     // save the token to disk
-    const tempDir = await fs.mkdtemp("aws-creds");
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "aws-creds"));
     const tokenFile = path.join(tempDir, "aws.creds.json");
     await fs.writeFile(tokenFile, token, { encoding: "utf-8" });
 
