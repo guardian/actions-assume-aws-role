@@ -1,6 +1,6 @@
 {
   "name": "@guardian/actions-assume-aws-role",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Install AWS credentials that can be used by subsequent steps",
   "main": "lib/main.js",
@@ -19,11 +19,13 @@
   },
   "author": "Developer Experience <devx@theguardian.com>",
   "dependencies": {
-    "@actions/core": "^1.5.0"
+    "@actions/core": "^1.5.0",
+    "node-fetch": "2.6.2"
   },
   "devDependencies": {
     "@guardian/eslint-config-typescript": "0.7.0",
     "@types/node": "^16.10.1",
+    "@types/node-fetch": "2.5.12",
     "@typescript-eslint/parser": "^4.31.2",
     "@vercel/ncc": "^0.31.1",
     "eslint": "^7.32.0",

@@ -1,11 +1,14 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'AWS Credentials Provisioning'
+description: 'Install AWS credentials that can be used by subsequent steps'
+author: 'The Guardian'
 inputs:
-  milliseconds: # change this
+  awsRoleToAssume:
+    description: 'The ARN of the AWS role which can be assumed by GHA'
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+  awsRegion:
+    description: 'The AWS region'
+    default: 'eu-west-1'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'
