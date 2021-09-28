@@ -1,7 +1,10 @@
 # @guardian/actions-assume-aws-role
 
 This is a [GitHub Action][action] for use during [CI].
-Use it to gain temporary credentials to AWS [by exchanging GitHub OIDC credentials for AWS IAM Assume Role][aws-docs] using an `AWS::IAM::OIDCProvider`.
+Use it to gain temporary credentials to AWS [by exchanging GitHub OIDC credentials for federated access to AWS][aws-docs] using an `AWS::IAM::OIDCProvider`.
+
+**:bulb: Are you working on a Guardian repository and using `@guardian/actions-assume-aws-role` to upload artifacts to [Riff-Raff]?
+[Skip ahead]!**
 
 ## Set up
 [This blog][awsteele] provides a lot of detail.
@@ -79,8 +82,12 @@ Outputs:
 ```
 
 ## Usage
-1. Add the `AWS::IAM::Role` ARN as a GitHub Actions [secret] (we'll assume the secret has been called `GU_ACTIONS_ROLE`)
-2. Ensure your AWS credential provider chain includes `TokenFileWebIdentityCredentials` (or equivalent in other flavours of the AWS SDK)
+1. Create a GitHub Actions [secret]:
+
+    Add the `AWS::IAM::Role` ARN as a GitHub Actions [secret] (we'll assume the secret has been called `GU_ACTIONS_ROLE`)
+2. Check your AWS credential provider chain:
+
+    Ensure your AWS credential provider chain includes `TokenFileWebIdentityCredentials` (or equivalent in other flavours of the AWS SDK)
 3. Add `id-token` permissions to the GitHub Actions job:
     ```yaml
     name: CI
@@ -140,7 +147,9 @@ It should be as simple as:
 [aws-docs]: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc.html
 [awsteele]: https://awsteele.com/blog/2021/09/15/aws-federation-comes-to-github-actions.html
 [CI]: https://docs.github.com/en/actions/automating-builds-and-tests/about-continuous-integration
+[Riff-Raff]: https://github.com/guardian/riffraff
 [riffraff-node]: https://github.com/guardian/node-riffraff-artifact
 [riffraff-sbt]: https://github.com/guardian/sbt-riffraff-artifact
 [secret]: https://docs.github.com/en/actions/security-guides/encrypted-secrets
+[Skip ahead]: #usage-with-sbt-riffraff-artifact-and-node-riffraff-artifact
 [Version]: https://github.com/actions/toolkit/blob/master/docs/action-versioning.md
