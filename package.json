@@ -20,7 +20,7 @@
   "author": "Developer Experience <devx@theguardian.com>",
   "dependencies": {
     "@actions/core": "^1.5.0",
-    "node-fetch": "2.6.2"
+    "node-fetch": "3.0.0"
   },
   "devDependencies": {
     "@guardian/eslint-config-typescript": "0.7.0",
