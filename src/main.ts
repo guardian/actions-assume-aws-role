@@ -4,8 +4,6 @@ import path from "path";
 import * as core from "@actions/core";
 
 interface Config {
-  requestToken: string;
-  requestUrl: string;
   awsRoleArn: string;
   awsRegion: string;
   gitHubEnvFile: string;
@@ -22,8 +20,6 @@ function getEnvString(name: string): string {
 async function run(): Promise<void> {
   try {
     const config: Config = {
-      requestToken: getEnvString(`ACTIONS_ID_TOKEN_REQUEST_TOKEN`),
-      requestUrl: getEnvString("ACTIONS_ID_TOKEN_REQUEST_URL"),
       awsRoleArn: core.getInput("awsRoleToAssume"),
       awsRegion: core.getInput("awsRegion"),
       gitHubEnvFile: getEnvString("GITHUB_ENV"),

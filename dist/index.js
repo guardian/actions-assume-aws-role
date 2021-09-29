@@ -53,8 +53,6 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const config = {
-                requestToken: getEnvString(`ACTIONS_ID_TOKEN_REQUEST_TOKEN`),
-                requestUrl: getEnvString("ACTIONS_ID_TOKEN_REQUEST_URL"),
                 awsRoleArn: core.getInput("awsRoleToAssume"),
                 awsRegion: core.getInput("awsRegion"),
                 gitHubEnvFile: getEnvString("GITHUB_ENV"),
