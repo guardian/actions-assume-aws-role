@@ -19,7 +19,7 @@
   },
   "author": "Developer Experience <devx@theguardian.com>",
   "dependencies": {
-    "@actions/core": "^1.5.0",
+    "@actions/core": "^1.6.0",
     "node-fetch": "2.6.2"
   },
   "devDependencies": {
