@@ -2,7 +2,6 @@ import { promises as fs } from "fs";
 import * as os from "os";
 import path from "path";
 import * as core from "@actions/core";
-import fetch, { Headers } from "node-fetch";
 
 interface Config {
   requestToken: string;
@@ -20,15 +19,6 @@ function getEnvString(name: string): string {
   return value;
 }
 
-async function fetchWebIdentityToken(config: Config): Promise<string> {
-  const headers = new Headers({ Authorization: `bearer ${config.requestToken}` });
-  const response = await fetch(`${config.requestUrl}&audience=sigstore`, {
-    headers,
-  });
-  const responseJson = (await response.json()) as Record<string, unknown>;
-  return responseJson.value as string;
-}
-
 async function run(): Promise<void> {
   try {
     const config: Config = {
@@ -40,7 +30,7 @@ async function run(): Promise<void> {
     };
 
     // fetching the token
-    const token = await fetchWebIdentityToken(config);
+    const token = await core.getIDToken("sigstore");
 
     // save the token to disk
     const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "aws-creds"));
