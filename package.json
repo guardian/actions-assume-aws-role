@@ -1,6 +1,6 @@
 {
   "name": "@guardian/actions-assume-aws-role",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "Install AWS credentials that can be used by subsequent steps",
   "main": "lib/main.js",
