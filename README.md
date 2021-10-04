@@ -103,7 +103,7 @@ Outputs:
     ```
 4. Update your GitHub Actions workflow, adding the following step _before_ any request to AWS:
     ```yaml
-    - uses: guardian/actions-assume-aws-role@vX.Y.Z # find the latest version from https://github.com/guardian/actions-assume-aws-role/releases/latest
+    - uses: guardian/actions-assume-aws-role@v1
       with:
         awsRoleToAssume: ${{ secrets.GU_ACTIONS_ROLE }}
     ```
@@ -122,7 +122,7 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v2
-      - uses: guardian/actions-assume-aws-role@vX.Y.Z # find the latest version from https://github.com/guardian/actions-assume-aws-role/releases/latest
+      - uses: guardian/actions-assume-aws-role@v1
         with:
           awsRoleToAssume: ${{ secrets.GU_ACTIONS_ROLE }}
       - run: aws s3 cp artifact.zip s3://build-artifacts/actions-assume-aws-role/ci/artifact.zip # Just an example, customise as needed.
