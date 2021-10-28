@@ -63,15 +63,15 @@ Resources:
             Condition:
               StringLike:
                 # All GitHub Actions running in repositories within the Guardian GitHub organisation, customise as needed.
-                vstoken.actions.githubusercontent.com:sub: repo:guardian/*
+                token.actions.githubusercontent.com:sub: repo:guardian/*
 
   GitHubOidc:
     Type: AWS::IAM::OIDCProvider
     Properties:
-      Url: https://vstoken.actions.githubusercontent.com
+      Url: https://token.actions.githubusercontent.com
       ClientIdList: [sigstore]
 
-      # This is the thumbprint of `vstoken.actions.githubusercontent.com`
+      # This is the thumbprint of `token.actions.githubusercontent.com`
       # See: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html
       ThumbprintList: [a031c46782e6e6c662c2c87c76da9aa62ccabd8e]
 
