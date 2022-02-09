@@ -73,7 +73,7 @@ Resources:
 
       # This is the thumbprint of `token.actions.githubusercontent.com`
       # See: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html
-      ThumbprintList: [a031c46782e6e6c662c2c87c76da9aa62ccabd8e]
+      ThumbprintList: [6938fd4d98bab03faadb97b34396831e3780aea1]
 
 Outputs:
   GitHubRoleArn:
